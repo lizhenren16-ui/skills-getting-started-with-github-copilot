@@ -10,8 +10,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const response = await fetch("/activities");
       const activities = await response.json();
 
-      // Clear loading message
       activitiesList.innerHTML = "";
+      activitySelect.innerHTML = ""; // Prevent duplicate options
 
       // Populate activities list
       Object.entries(activities).forEach(([name, details]) => {
@@ -20,11 +20,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const spotsLeft = details.max_participants - details.participants.length;
 
+        // Participants section
+        const participantsHTML = `
+          <div class="activity-participants" style="margin-top:12px;background:#f1f5fa;border-radius:8px;padding:12px;">
+            <div class="activity-participants-title" style="font-weight:500;margin-bottom:6px;color:#1a2a3a;font-size:1em;">
+              참가자 (${details.participants.length}명):
+            </div>
+            <ul class="activity-participants-list" style="margin:0;padding-left:20px;color:#2d3a4b;font-size:0.97em;">
+              ${
+                details.participants.length === 0
+                  ? '<li style="color:#888;">아직 참가자가 없습니다.</li>'
+                  : details.participants.map(email => `<li>${email}</li>`).join('')
+              }
+            </ul>
+          </div>
+        `;
+
         activityCard.innerHTML = `
-          <h4>${name}</h4>
-          <p>${details.description}</p>
-          <p><strong>Schedule:</strong> ${details.schedule}</p>
-          <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
+          <h4 style="font-size:1.2em;font-weight:bold;color:#2d3a4b;">${name}</h4>
+          <p style="color:#444;">${details.description}</p>
+          <p style="font-size:0.98em;color:#6c7a89;"><strong>일정:</strong> ${details.schedule}</p>
+          <p><strong>남은 자리:</strong> ${spotsLeft}명</p>
+          ${participantsHTML}
         `;
 
         activitiesList.appendChild(activityCard);
